@@ -1,0 +1,35 @@
+services:
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    container_name: ${DATABASE_HOST}
+    env_file: ./.env
+    ports:
+      - "${DATABASE_LOCAL_PORT}:${DATABASE_DOCKER_PORT}"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DATABASE_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$DATABASE_PASSWORD
+    networks:
+      - net_api
+
+  fastapi-app:
+    build: .
+    container_name: fast_api_backend
+    restart: always
+    ports:
+      - "${APP_LOCAL_PORT}:${APP_DOCKER_PORT}"
+    depends_on:
+      - ${DATABASE_HOST}
+    environment:
+      MONGO_URI: ${MONGO_CONTAINER_URI}
+    env_file:
+      - .env
+    networks:
+      - net_api
+networks:
+   net_api:
+
+volumes:
+  mongo_data:

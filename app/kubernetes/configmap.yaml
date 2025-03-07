@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-config
+  namespace: fastapi-app
+data:
+  APP_DOCKER_PORT: "8000"
+  DATABASE_DOCKER_PORT: "27017"
+  MONGO_URI: "mongodb://$(DATABASE_USER):$(DATABASE_PASSWORD)@mongodb:27017/"

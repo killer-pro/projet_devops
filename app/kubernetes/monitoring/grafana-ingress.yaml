@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: fastapi-ingress
-  namespace: fastapi-app
+  name: grafana-ingress
+  namespace: monitoring
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: fastapi.local
+  - host: grafana.example.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: fastapi-app-backend
+            name: grafana
             port:
-              number: 8000
+              number: 3000

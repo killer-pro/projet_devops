@@ -5,10 +5,11 @@ metadata:
   namespace: monitoring
 data:
   fluent.conf: |
+    # Input plugin for Kubernetes logs
     <source>
       @type tail
       path /var/log/containers/fastapi-app-backend*.log
-      pos_file /var/log/fluentd-containers.log.pos
+      pos_file /var/log/fluentd/positions/fluentd-containers.log.pos
       tag kubernetes.fastapi.*
       read_from_head true
       <parse>
@@ -20,7 +21,7 @@ data:
     <source>
       @type tail
       path /var/log/containers/mongodb*.log
-      pos_file /var/log/fluentd-mongodb.log.pos
+      pos_file /var/log/fluentd/positions/fluentd-mongodb.log.pos
       tag kubernetes.mongodb.*
       read_from_head true
       <parse>
@@ -29,16 +30,11 @@ data:
       </parse>
     </source>
 
-    <filter kubernetes.**>
-      @type kubernetes_metadata
-      kubernetes_url https://kubernetes.default.svc
-      verify_ssl false
-    </filter>
-
+    # Output plugin for Loki
     <match kubernetes.**>
       @type loki
-      url "http://loki:3100"
-      extra_labels {"job":"fluentd"}
+      url http://loki:3100
+      extra_labels {"job": "fluentd"}
       flush_interval 10s
       flush_at_shutdown true
       buffer_chunk_limit 1m
